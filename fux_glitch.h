@@ -90,7 +90,7 @@ virtual void	posMess(int x, int y);
     	//////////
     	// The pixBlock with the current image
     	pixBlock    	m_pixBlock;
-	imageStruct     m_imageStruct;
+		imageStruct     m_imageStruct;
     	
     	//////////
     	// The x position
@@ -108,9 +108,17 @@ virtual void	posMess(int x, int y);
     	// The height
     	int     	m_height;
     	
-	//////////
-	// Glitch Data
-	int GLITCH_AMOUNT;	
+		//////////
+		// Glitch Data
+		int GLITCH_AMOUNT;	
+		
+		int		m_blur;
+		float	m_glitchAmount;
+		float	m_glitchLength;
+		
+		
+		t_inlet*	inletLength;
+    
 
     private:
     	
@@ -119,7 +127,9 @@ virtual void	posMess(int x, int y);
     	static void 	snapMessCallback(void *data);
     	static void 	sizeMessCallback(void *data, t_floatarg width, t_floatarg height );
     	static void 	posMessCallback(void *data, t_floatarg x, t_floatarg y);
-	static void     glitchAmountCallback(void *data, t_floatarg size);
+		static void     glitchAmountCallback(void *data, t_floatarg size);
+		static void     lengthCallback(void *data, t_floatarg size);
+		
 	
 };
 

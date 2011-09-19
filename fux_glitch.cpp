@@ -51,9 +51,10 @@ fux_glitch :: fux_glitch(int argc, t_atom *argv)
     m_x = m_y = 0;
     m_width = m_height = 128;
   }
-  inlet_new(this->x_obj, &this->x_obj->ob_pd, gensym("list"), gensym("vert_pos"));
-  inlet_new(this->x_obj, &this->x_obj->ob_pd, gensym("list"), gensym("vert_size"));
-  inlet_new(this->x_obj, &this->x_obj->ob_pd, gensym("float"), gensym("glitch_amount"));
+				inlet_new(this->x_obj, &this->x_obj->ob_pd, gensym("list"), gensym("vert_pos"));
+				inlet_new(this->x_obj, &this->x_obj->ob_pd, gensym("list"), gensym("vert_size"));
+  				inlet_new(this->x_obj, &this->x_obj->ob_pd, gensym("float"), gensym("glitch_amount"));
+  inletLength = inlet_new(this->x_obj, &this->x_obj->ob_pd, &s_float, gensym("length"));
 
   GLITCH_AMOUNT = 20;
 }
@@ -139,10 +140,9 @@ void fux_glitch :: snapMess()
     FreeImage_AcquireMemory(GLITCH_MEM, &GLITCH_DATA, (DWORD*) &GLITCH_SIZE);
 
     // Fuck the memory
-    for(int i = 0; i < GLITCH_AMOUNT; i++)
+	for(int g=m_glitchAmount; g < (m_glitchAmount+m_glitchLength); g++  )
     {
-    	int GLITCH_POS = (GLITCH_START + random()) % (int) GLITCH_SIZE;
-    	GLITCH_DATA[GLITCH_POS] = '\0'; 
+    	GLITCH_DATA[g] = '\0'; 
     }
     
     // Rewind to Start of mem or Blank image
@@ -271,16 +271,13 @@ void fux_glitch :: cleanImage()
 /////////////////////////////////////////////////////////
 void fux_glitch :: obj_setupCallback(t_class *classPtr)
 {
-    class_addmethod(classPtr, (t_method)&fux_glitch::snapMessCallback,
-    	    gensym("snap"), A_NULL);
+    class_addmethod(classPtr, (t_method)&fux_glitch::snapMessCallback,gensym("snap"), A_NULL);
     class_addbang(classPtr, (t_method)&fux_glitch::snapMessCallback);
-    class_addmethod(classPtr, (t_method)&fux_glitch::sizeMessCallback,
-    	    gensym("vert_size"), A_FLOAT, A_FLOAT, A_NULL);
-    class_addmethod(classPtr, (t_method)&fux_glitch::posMessCallback,
-    	    gensym("vert_pos"), A_FLOAT, A_FLOAT, A_NULL);
-    class_addmethod(classPtr, (t_method)&fux_glitch::glitchAmountCallback,
-    	    gensym("glitch_amount"), A_FLOAT);
+    class_addmethod(classPtr, (t_method)&fux_glitch::sizeMessCallback,gensym("vert_size"), A_FLOAT, A_FLOAT, A_NULL);
+    class_addmethod(classPtr, (t_method)&fux_glitch::posMessCallback, gensym("vert_pos"), A_FLOAT, A_FLOAT, A_NULL);
 
+    class_addmethod(classPtr, (t_method)&fux_glitch::glitchAmountCallback,gensym("glitch_amount"), A_DEFFLOAT, A_NULL);
+    class_addmethod(classPtr, (t_method)&fux_glitch::lengthCallback,gensym("length"), A_DEFFLOAT, A_NULL);
 }
 void fux_glitch :: snapMessCallback(void *data)
 {
@@ -294,10 +291,13 @@ void fux_glitch :: sizeMessCallback(void *data, t_floatarg width, t_floatarg hei
 
 void fux_glitch :: glitchAmountCallback(void *data, t_floatarg size)
 {
-    GetMyClass(data)->glitchAmount((int)size);
+    GetMyClass(data)->m_glitchAmount=(int)size;
 }
 
-
+void fux_glitch :: lengthCallback(void *data, t_floatarg size)
+{
+    GetMyClass(data)->m_glitchLength=(int)size;
+}
 void fux_glitch :: posMessCallback(void *data, t_floatarg x, t_floatarg y)
 {
     GetMyClass(data)->posMess((int)x, (int)y);
